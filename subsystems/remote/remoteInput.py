@@ -1,0 +1,53 @@
+from typing import TYPE_CHECKING, Callable, Generic, List, TypeVar
+
+from subsystems.subsystemInterface import SubsystemInterface
+
+if TYPE_CHECKING:
+    from commands.commandInterface import CommandInterface
+
+# Generic type for RemoteInput
+T = TypeVar("T")
+
+
+class RemoteInput(SubsystemInterface, Generic[T]):
+    """Generic class to handle remote inputs and dispatch them"""
+
+    _data_function: Callable[[], T]
+    _state: T
+
+    _dirty: bool
+    _listeners: List[tuple["CommandInterface", int]]
+
+    def __init__(self, data_function: Callable[[], T]):
+        """
+        :param data_function: Function to gather the button input state
+        """
+        super().__init__()
+        self._state = data_function()
+        self._data_function = data_function
+        self._dirty = False
+        self._listeners = []
+
+    def subscribe(self, command: "CommandInterface", index: int) -> None:
+        """Method to subscribe a command to this input."""
+        self._listeners.append((command, index))
+
+    def update(self) -> None:
+        """Method to update the input state. Also validates the dirtiness to trigger commands correctly."""
+        previous_state = self._state
+        self._state = self._data_function()
+        if self._state != previous_state:
+            print("Remote Input Triggered")
+            self._dirty = True
+        else:
+            self._dirty = False
+
+    def execute(self) -> None:
+        if self._dirty:
+            print("Executing Dirty Input")
+            for command, index in self._listeners:
+                command.execute(self._state, index)
+
+    def get(self) -> T:
+        """Method to get the current button state. Used by non-subscribers"""
+        return self._state
