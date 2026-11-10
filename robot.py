@@ -1,5 +1,3 @@
-
-#!/usr/bin/env python3
 # partir la sim: on ajoute venv, on tape robotpy sim
 # pour partir le robot: py -3 -m robotpy sim --xrp
 # pour arrêter faire control-c
@@ -25,21 +23,19 @@
 
 
 import os
+
 import wpilib
 
 # Ceci rejoint le XRP par défault.
 os.environ["HALSIMXRP_HOST"] = "192.168.42.1"
 os.environ["HALSIMXRP_PORT"] = "3540"
 
-import wpilib
-
 from commands import CommandInterface
 from config import config
 from subsystems.remote import RemoteControllerSS
 
-
 """
-The Robot class 
+The Robot class
 """
 
 class Robot(wpilib.TimedRobot):
@@ -57,9 +53,14 @@ class Robot(wpilib.TimedRobot):
         for command in self._commands:
             command.bind(self._controller)
 
+    def autonomousPeriodic(self):
+        for command in self._commands:
+            command.update()
+            command.autonomous()
+
     def teleopPeriodic(self):
         self._controller.update()
         self._controller.execute()
-        
+
         for command in self._commands:
             command.update()

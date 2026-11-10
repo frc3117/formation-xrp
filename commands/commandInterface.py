@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, overload
+from typing import TYPE_CHECKING, overload
 
 if TYPE_CHECKING:
     from subsystems.remote import RemoteControllerSS
@@ -9,7 +9,7 @@ class CommandInterface:
     """Default Command Interface and behaviour"""
 
     @overload
-    def __init__(self, btn_id: List[str]): ...
+    def __init__(self, btn_id: list[str]): ...
     @overload
     def __init__(self, btn_id: str): ...
     def __init__(self, btn_id):
@@ -31,6 +31,10 @@ class CommandInterface:
 
     def update(self):
         """Should be overriden if subsystems need to be updated (ie if PIDs are used)"""
+        pass
+
+    def autonomous(self):
+        """Should be overriden if command has a behaviour in autonomous (ie if the robot needs to move in autonomous)"""
         pass
 
     # ALL THE FUNCTIONS BELLOW SHOULD BE OVERWRITEN (at least trigger)

@@ -10,6 +10,6 @@ class ArmCommand(CommandInterface):
 
     def _trigger(self, btn_v: bool, index: int = 0) -> None:
         if btn_v == 1:
-            self.servo.setAngle(math.degrees(90))
+            self.servo.setAngle(math.radians(90))
         elif btn_v == 0:
-            self.servo.setAngle(math.degrees(30))
+            self.servo.setAngle(math.radians(30))
